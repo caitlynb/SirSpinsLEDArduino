@@ -27,6 +27,7 @@
 #include <platforms.h>
 #include <power_mgt.h>
 #include <Wire.h>
+#include <avr/wdt.h> // watchdogs... silly I2C issues.
 
 // Communications with the Rio
 #include "SirTipsDefines.h"
@@ -39,8 +40,10 @@ CRGB leds[numleds];
 uint8_t stripidx[numstrips];
 bool stripdir[numstrips] = {clkwise, cntrclkwise, clkwise, clkwise};
 
-unsigned long time;
+unsigned long curmillis;
 unsigned long strobetime;
+unsigned long i2ctime;
+unsigned long ledtimer;
 bool blinkState = false;
 
 uint8_t curTargetAngle = 0;
@@ -54,13 +57,20 @@ CRGB battcritcol = {200,0,0};
 
 CRGB disabledcol = CRGB::Green;
 CRGB autocol = CRGB::Blue;
-CRGB teleopcol = CRGB::Yellow;
+CRGB teleopcol = CRGB::Red;
 CRGB testcol = CRGB::White;
+
+CRGB stalecol = {50,20,20};
+
+
+uint8_t riocomms[COMMUNICATIONBUFFERLENGTH];
+boolean newdata = false;
 
 uint8_t curRobotOperatingMode = ROBOTDISABLED;
 uint8_t curRobotStatus = ROBOTBATTERYSTOP;
 
 void setup() {
+  wdt_enable(WDTO_250MS);
   // put your setup code here, to run once:
   FastLED.addLeds<APA102, LEDDataPin, LEDClockPin, BGR>(leds, numleds);
   FastLED.show(); // immediately turn off LEDs.
@@ -69,10 +79,24 @@ void setup() {
     stripidx[i] = i * striplen;
   }
 
-  time = millis();
+  curmillis = millis();
   strobetime = millis();
 
+  for(int i =0; i < COMMUNICATIONBUFFERLENGTH; i++){
+    riocomms[i] = 0;
+  }
+  
+  Wire.begin(I2CAddress);
+  Wire.onReceive(receiveI2CEvent);
+
+  //setBinaryLed(FrontBottom, CRGB::Blue, 12, B10100001);
+  setLED(FrontTop, 8, CRGB::Blue);
+  setLED(FrontTop, 17, CRGB::Blue);
+  setLED(FrontBottom, 8, CRGB::Blue);
+  setLED(FrontBottom, 17, CRGB::Blue);
 }
+
+void(* resetFunc) (void) = 0; // declare reset function at address 0, from instructables
 
 void setLED(uint8_t stripid, uint8_t ledid, CRGB color){
   if(stripdir[stripid]){
@@ -82,28 +106,29 @@ void setLED(uint8_t stripid, uint8_t ledid, CRGB color){
     // false = counterclockwise
     leds[stripidx[stripid]+map(ledid, 0, striplen, striplen, 0)-1] = color;
   }
-  Wire.begin(I2CAddress);
-  Wire.onReceive(receiveI2CEvent);
 }
 
 void receiveI2CEvent(int numbytes){
   int bytenum = 0;
-  while(1 < Wire.available()){
+  while(0 < Wire.available()){
     uint8_t in = Wire.read();
-    switch(bytenum){
-      case BYTEROBOTOPERATINGMODE:
-        curRobotOperatingMode = in;
-        break;
-      case BYTEROBOTSTATUS:
-        curRobotStatus = in;
-        break;
-      case BYTETARGETANGLE:
-        curTargetAngle = in;
-        break;
-      default:
-        break;
+    if(bytenum < COMMUNICATIONBUFFERLENGTH){
+      riocomms[bytenum] = in;
     }
     bytenum++;
+  }
+  newdata = true;
+}
+
+void setBinaryLed(int stripid, CRGB color, int start, uint8_t data){
+  for(int i = 0; i < 8; i++){
+    if(data & B00000001){
+      // note, currently outputs 'backwards' (LSB), but this is good for my clockwise oriented leds.
+      setLED(stripid, start+i, color);
+    } else {
+      setLED(stripid, start+i, CRGB::Black);
+    }
+    data = data>>1;
   }
 }
 
@@ -166,6 +191,7 @@ void setModeLed(CRGB color){
 
 
 void loop() {
+  wdt_reset();
   // put your main code here, to run repeatedly:
   /*for(int i = 0; i < numleds; i++){
     leds[i] = CRGB::Green;
@@ -174,11 +200,33 @@ void loop() {
     leds[i] = CRGB::Black;
   }*/
   
-  time = millis();
+  curmillis = millis();
 
-  if(time - strobetime > 500){
-      strobetime = time;
+  if(curmillis - strobetime > 500){
+      strobetime = curmillis;
       blinkState = !blinkState;
+  }
+
+ 
+  if(newdata){
+    setBinaryLed(FrontTop, CRGB::Red, 9, riocomms[0]);
+    setBinaryLed(FrontBottom, CRGB::Red, 9, riocomms[1]);
+    curRobotOperatingMode = riocomms[0];
+    curRobotStatus = riocomms[1];
+    newdata = false;
+    i2ctime = curmillis;
+  } else if(curmillis - i2ctime > 5000){
+    // if it has been 5 seconds since we last saw an I2C packet, perform a hard reset of the arduino
+    // just in case the I2C bus got noisy and crashed...
+    delay(1000); // trigger the watchdog to reboot the MCU
+  } else if(curmillis - i2ctime > 2000){
+    for(int i = 0; i < 8; i++){
+      setLED(FrontTop, 9+i, CRGB::Black);
+      setLED(FrontBottom, 9+i, CRGB::Black);
+    }
+  } else if(curmillis - i2ctime > 500){
+    setBinaryLed(FrontTop, stalecol, 9, riocomms[0]);
+    setBinaryLed(FrontBottom, stalecol, 9, riocomms[1]);
   }
 
   // Robot Safety Light equivalent
@@ -216,9 +264,12 @@ void loop() {
       setBatteryLed(CRGB::Black);
     }
   }
-    
-  FastLED.setBrightness(50);
-  FastLED.show();
+        
+  if(curmillis - ledtimer > 50){
+    FastLED.setBrightness(50);
+    FastLED.show();
+    ledtimer = curmillis;
+  }
 }
 
 

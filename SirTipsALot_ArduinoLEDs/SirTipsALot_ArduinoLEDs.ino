@@ -133,59 +133,81 @@ void setBinaryLed(int stripid, CRGB color, int start, uint8_t data){
 }
 
 void setWarningLed(CRGB color){
-  setLED(FrontTop, 1, color);
-  setLED(FrontTop, striplen-2, color);
-  setLED(RearTop, 1, color);
-  setLED(RearTop, striplen-2, color);
+  setLED(FrontTop, 2, color);
   setLED(FrontTop, 3, color);
-  setLED(FrontTop, striplen-4, color);
+  setLED(FrontTop, 4, color);
+  
+  setLED(RearTop, 2, color);
   setLED(RearTop, 3, color);
+  setLED(RearTop, 4, color);
+  
+  setLED(FrontTop, striplen-3, color);
+  setLED(FrontTop, striplen-4, color);
+  setLED(FrontTop, striplen-5, color);
+  
+  setLED(RearTop, striplen-3, color);
   setLED(RearTop, striplen-4, color);
-  setLED(FrontTop, 5, color);
-  setLED(FrontTop, striplen-6, color);
-  setLED(RearTop, 5, color);
-  setLED(RearTop, striplen-6,color);
+  setLED(RearTop, striplen-5, color);
 }
+
 void setBatteryLed(CRGB color){
-  setLED(FrontBottom, 1, color);
-  setLED(FrontBottom, striplen-2, color);
-  setLED(RearBottom, 1, color);
-  setLED(RearBottom, striplen-2, color);
+  setLED(FrontBottom, 2, color);
   setLED(FrontBottom, 3, color);
-  setLED(FrontBottom, striplen-4, color);
+  setLED(FrontBottom, 4, color);
+  
+  setLED(RearBottom, 2, color);
   setLED(RearBottom, 3, color);
+  setLED(RearBottom, 4, color);
+  
+  setLED(FrontBottom, striplen-3, color);
+  setLED(FrontBottom, striplen-4, color);
+  setLED(FrontBottom, striplen-5, color);
+  
+  setLED(RearBottom, striplen-3, color);
   setLED(RearBottom, striplen-4, color);
-  setLED(FrontBottom, 5, color);
-  setLED(FrontBottom, striplen-6, color);
-  setLED(RearBottom, 5, color);
-  setLED(RearBottom, striplen-6,color);
+  setLED(RearBottom, striplen-5, color);
 }
+
 void setModeLed(CRGB color){
   setLED(FrontTop, 0, color);
-  setLED(FrontTop, striplen-1, color);
-  setLED(RearTop, 0, color);
-  setLED(RearTop, striplen-1, color);
-  setLED(FrontTop, 2, color);
-  setLED(FrontTop, striplen-3, color);
-  setLED(RearTop, 2, color);
-  setLED(RearTop, striplen-3, color);
-  setLED(FrontTop, 4, color);
-  setLED(FrontTop, striplen-5, color);
-  setLED(RearTop, 4, color);
-  setLED(RearTop, striplen-5,color);
+  setLED(FrontTop, 1, color);
+  setLED(FrontTop, 5, color);
+  setLED(FrontTop, 6, color);
+
+  setLED(FrontTop, striplen-1,color);
+  setLED(FrontTop, striplen-2,color);
+  setLED(FrontTop, striplen-6,color);
+  setLED(FrontTop, striplen-7,color);
 
   setLED(FrontBottom, 0, color);
-  setLED(FrontBottom, striplen-1, color);
+  setLED(FrontBottom, 1, color);
+  setLED(FrontBottom, 5, color);
+  setLED(FrontBottom, 6, color);
+
+  setLED(FrontBottom, striplen-1,color);
+  setLED(FrontBottom, striplen-2,color);
+  setLED(FrontBottom, striplen-6,color);
+  setLED(FrontBottom, striplen-7,color);
+
+  setLED(RearTop, 0, color);
+  setLED(RearTop, 1, color);
+  setLED(RearTop, 5, color);
+  setLED(RearTop, 6, color);
+
+  setLED(RearTop, striplen-1,color);
+  setLED(RearTop, striplen-2,color);
+  setLED(RearTop, striplen-6,color);
+  setLED(RearTop, striplen-7,color);
+
   setLED(RearBottom, 0, color);
-  setLED(RearBottom, striplen-1, color);
-  setLED(FrontBottom, 2, color);
-  setLED(FrontBottom, striplen-3, color);
-  setLED(RearBottom, 2, color);
-  setLED(RearBottom, striplen-3, color);
-  setLED(FrontBottom, 4, color);
-  setLED(FrontBottom, striplen-5, color);
-  setLED(RearBottom, 4, color);
-  setLED(RearBottom, striplen-5,color);
+  setLED(RearBottom, 1, color);
+  setLED(RearBottom, 5, color);
+  setLED(RearBottom, 6, color);
+
+  setLED(RearBottom, striplen-1,color);
+  setLED(RearBottom, striplen-2,color);
+  setLED(RearBottom, striplen-6,color);
+  setLED(RearBottom, striplen-7,color);
 }
 
 

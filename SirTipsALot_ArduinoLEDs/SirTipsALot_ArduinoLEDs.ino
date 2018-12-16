@@ -1,4 +1,3 @@
-// autoinclude FastLED library
 #include <bitswap.h>
 #include <chipsets.h>
 #include <color.h>
@@ -26,6 +25,9 @@
 #include <pixeltypes.h>
 #include <platforms.h>
 #include <power_mgt.h>
+
+// autoinclude FastLED library
+
 #include <Wire.h>
 #include <avr/wdt.h> // watchdogs... silly I2C issues.
 
@@ -38,8 +40,8 @@ const uint8_t numleds = numstrips * striplen;
 CRGB leds[numleds];
 
 uint8_t stripidx[numstrips];
-bool stripdir[numstrips] = {clkwise, cntrclkwise, clkwise, clkwise};
-
+// bool stripdir[numstrips] = {clkwise, cntrclkwise, clkwise, clkwise};
+bool stripdir[numstrips] = {clkwise, cntrclkwise};
 unsigned long curmillis;
 unsigned long strobetime;
 unsigned long i2ctime;
@@ -248,7 +250,7 @@ void loop() {
   } else if(curmillis - i2ctime > 2000){
     for(int i = 0; i < 8; i++){
       setLED(FrontTop, 9+i, CRGB::Black);
-      setLED(FrontBottom, 9+i, CRGB::Black);
+      //setLED(FrontBottom, 9+i, CRGB::Black);
     }
   } else if(curmillis - i2ctime > 500){
     //setBinaryLed(FrontTop, stalecol, 9, riocomms[0]);
@@ -298,7 +300,3 @@ void loop() {
     ledtimer = curmillis;
   }
 }
-
-
-
-

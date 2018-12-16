@@ -90,10 +90,10 @@ void setup() {
   Wire.onReceive(receiveI2CEvent);
 
   //setBinaryLed(FrontBottom, CRGB::Blue, 12, B10100001);
-  setLED(FrontTop, 8, CRGB::Blue);
-  setLED(FrontTop, 17, CRGB::Blue);
-  setLED(FrontBottom, 8, CRGB::Blue);
-  setLED(FrontBottom, 17, CRGB::Blue);
+  //setLED(FrontTop, 8, CRGB::Blue);
+  //setLED(FrontTop, 17, CRGB::Blue);
+  //setLED(FrontBottom, 8, CRGB::Blue);
+  //setLED(FrontBottom, 17, CRGB::Blue);
 }
 
 void(* resetFunc) (void) = 0; // declare reset function at address 0, from instructables
@@ -150,6 +150,7 @@ void setWarningLed(CRGB color){
   setLED(RearTop, striplen-5, color);
 }
 
+/*
 void setBatteryLed(CRGB color){
   setLED(FrontBottom, 2, color);
   setLED(FrontBottom, 3, color);
@@ -167,6 +168,7 @@ void setBatteryLed(CRGB color){
   setLED(RearBottom, striplen-4, color);
   setLED(RearBottom, striplen-5, color);
 }
+*/
 
 void setModeLed(CRGB color){
   setLED(FrontTop, 0, color);
@@ -178,7 +180,7 @@ void setModeLed(CRGB color){
   setLED(FrontTop, striplen-2,color);
   setLED(FrontTop, striplen-6,color);
   setLED(FrontTop, striplen-7,color);
-
+/*
   setLED(FrontBottom, 0, color);
   setLED(FrontBottom, 1, color);
   setLED(FrontBottom, 5, color);
@@ -188,6 +190,7 @@ void setModeLed(CRGB color){
   setLED(FrontBottom, striplen-2,color);
   setLED(FrontBottom, striplen-6,color);
   setLED(FrontBottom, striplen-7,color);
+  */
 
   setLED(RearTop, 0, color);
   setLED(RearTop, 1, color);
@@ -198,7 +201,7 @@ void setModeLed(CRGB color){
   setLED(RearTop, striplen-2,color);
   setLED(RearTop, striplen-6,color);
   setLED(RearTop, striplen-7,color);
-
+/*
   setLED(RearBottom, 0, color);
   setLED(RearBottom, 1, color);
   setLED(RearBottom, 5, color);
@@ -208,6 +211,7 @@ void setModeLed(CRGB color){
   setLED(RearBottom, striplen-2,color);
   setLED(RearBottom, striplen-6,color);
   setLED(RearBottom, striplen-7,color);
+  */
 }
 
 
@@ -231,8 +235,8 @@ void loop() {
 
  
   if(newdata){
-    setBinaryLed(FrontTop, CRGB::Red, 9, riocomms[0]);
-    setBinaryLed(FrontBottom, CRGB::Red, 9, riocomms[1]);
+    //setBinaryLed(FrontTop, CRGB::Red, 9, riocomms[0]);
+    //setBinaryLed(FrontBottom, CRGB::Red, 9, riocomms[1]);
     curRobotOperatingMode = riocomms[0];
     curRobotStatus = riocomms[1];
     newdata = false;
@@ -247,8 +251,8 @@ void loop() {
       setLED(FrontBottom, 9+i, CRGB::Black);
     }
   } else if(curmillis - i2ctime > 500){
-    setBinaryLed(FrontTop, stalecol, 9, riocomms[0]);
-    setBinaryLed(FrontBottom, stalecol, 9, riocomms[1]);
+    //setBinaryLed(FrontTop, stalecol, 9, riocomms[0]);
+    //setBinaryLed(FrontBottom, stalecol, 9, riocomms[1]);
   }
 
   // Robot Safety Light equivalent
@@ -272,7 +276,7 @@ void loop() {
   } else if( curRobotOperatingMode == ROBOTTEST){
     setModeLed(testcol);
   }
-
+/*
   if(curRobotStatus == ROBOTBATTERYGOOD){
     setBatteryLed(battgoodcol);
   } else if(curRobotStatus == ROBOTBATTERYWARN){
@@ -286,6 +290,7 @@ void loop() {
       setBatteryLed(CRGB::Black);
     }
   }
+  */
         
   if(curmillis - ledtimer > 50){
     FastLED.setBrightness(50);

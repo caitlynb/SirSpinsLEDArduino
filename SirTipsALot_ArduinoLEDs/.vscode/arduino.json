@@ -1,5 +1,7 @@
 {
     "board": "arduino:avr:mega",
     "configuration": "cpu=atmega2560",
-    "sketch": "SirTipsALot_ArduinoLEDs.ino"
+    "sketch": "SirTipsALot_ArduinoLEDs.ino",
+    "programmer": "AVRISP mkII",
+    "port": "COM4"
 }

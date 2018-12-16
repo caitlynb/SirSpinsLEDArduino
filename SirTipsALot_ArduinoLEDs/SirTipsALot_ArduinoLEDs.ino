@@ -64,6 +64,8 @@ CRGB testcol = CRGB::White;
 
 CRGB stalecol = {50,20,20};
 
+CRGB frontcol;
+
 
 uint8_t riocomms[COMMUNICATIONBUFFERLENGTH];
 boolean newdata = false;
@@ -216,6 +218,11 @@ void setModeLed(CRGB color){
   */
 }
 
+void setFront(){
+  for(int i = 5; i < striplen-5; i++){
+    setLED(FrontTop, i, frontcol);
+  }
+}
 
 
 void loop() {
@@ -243,6 +250,10 @@ void loop() {
     curRobotStatus = riocomms[1];
     newdata = false;
     i2ctime = curmillis;
+    frontcol[0] = riocomms[3];
+    frontcol[1] = riocomms[4];
+    frontcol[2] = riocomms[5];
+    setFront();
   } else if(curmillis - i2ctime > 5000){
     // if it has been 5 seconds since we last saw an I2C packet, perform a hard reset of the arduino
     // just in case the I2C bus got noisy and crashed...
